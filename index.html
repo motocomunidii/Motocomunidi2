@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moto Comunidi</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #FFFFFF;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: #1E1E1E;
+      border: 2px solid #D32F2F;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(211, 47, 47, 0.2);
+      position: relative;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: #D32F2F;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #CCCCCC;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      background-color: #2A2A2A;
+      border: 1px solid #444444;
+      border-radius: 6px;
+      color: #FFFFFF;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #D32F2F;
+    }
+
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrapper input {
+      padding-right: 42px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 18px;
+      opacity: 0.7;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background-color: #D32F2F;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #B71C1C;
+    }
+
+    .btn-secondary {
+      background-color: #333333;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #444444;
+    }
+
+    .btn-approve {
+      background-color: #2E7D32;
+      padding: 10px;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-reject {
+      background-color: #C62828;
+      padding: 10px;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-ban {
+      background-color: #D32F2F;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .status-online-bar {
+      background-color: #1A1A1A;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #757575;
+      margin-right: 6px;
+    }
+
+    .status-indicator.online {
+      background-color: #2E7D32;
+      box-shadow: 0 0 8px #2E7D32;
+    }
+
+    .btn-toggle-online {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 20px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #2E7D32;
+      color: #fff;
+    }
+
+    .btn-toggle-online.is-online {
+      background-color: #C62828;
+    }
+
+    .doc-preview {
+      width: 100%;
+      max-height: 120px;
+      object-fit: contain;
+      margin-top: 8px;
+      border-radius: 4px;
+      display: none;
+      border: 1px solid #444;
+    }
+
+    .chat-box {
+      height: 200px;
+      background-color: #2A2A2A;
+      border-radius: 6px;
+      padding: 10px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-msg {
+      padding: 8px 12px;
+      border-radius: 6px;
+      max-width: 85%;
+      font-size: 13px;
+      word-break: break-word;
+    }
+
+    .msg-passageiro, .msg-user {
+      background-color: #D32F2F;
+      align-self: flex-end;
+    }
+
+    .msg-motorista, .msg-adm {
+      background-color: #444444;
+      align-self: flex-start;
+    }
+
+    .msg-adm {
+      border-left: 3px solid #FFD700;
+    }
+
+    .user-card {
+      background-color: #2A2A2A;
+      border-left: 4px solid #D32F2F;
+      padding: 14px;
+      margin-bottom: 14px;
+      border-radius: 6px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #D32F2F;
+    }
+
+    .profile-info h4 {
+      color: #FFF;
+      font-size: 16px;
+    }
+
+    .profile-info p {
+      color: #FFD700;
+      font-size: 13px;
+    }
+
+    .adm-doc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+      background-color: #1A1A1A;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .adm-doc-item {
+      text-align: center;
+    }
+
+    .adm-doc-item span {
+      font-size: 10px;
+      color: #AAA;
+      display: block;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .adm-doc-item img {
+      width: 100%;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background: #000;
+      cursor: pointer;
+    }
+
+    .user-profile-box {
+      background-color: #2A2A2A;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid #333;
+    }
+
+    .user-profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #D32F2F;
+      margin: 0 auto 15px auto;
+      display: block;
+    }
+
+    .stats-grid {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #444;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 18px;
+      font-weight: bold;
+      color: #FFD700;
+    }
+
+    .stat-lbl {
+      font-size: 11px;
+      color: #AAA;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .rating-stars {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #555;
+      margin: 15px 0;
+    }
+
+    .rating-stars .selected {
+      color: #FFD700;
+    }
+
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 320px;
+    }
+
+    .toast {
+      background-color: #222;
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #D32F2F;
+      animation: slideIn 0.3s ease-out forwards;
+    }
+
+    .toast.success { border-left-color: #2E7D32; }
+    .toast.warning { border-left-color: #FFA000; }
+    .toast.error { border-left-color: #D32F2F; }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .app-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 15px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 6px;
+      background: #2A2A2A;
+      color: #888;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 11px;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      background: #D32F2F;
+      color: #FFF;
+    }
+
+    .badge-notification {
+      position: absolute;
+      top: -4px;
+      right: -2px;
+      background-color: #FF0000;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 5px;
+      font-size: 9px;
+      font-weight: bold;
+      border: 1px solid #FFF;
+    }
+
+    .rules-card {
+      background: #2A2A2A;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #333;
+    }
+
+    .rules-header-badge {
+      background-color: rgba(211, 47, 47, 0.15);
+      color: #D32F2F;
+      border: 1px solid #D32F2F;
+      border-radius: 4px;
+      padding: 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    .rule-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #333;
+    }
+
+    .rule-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .rule-num {
+      background: #D32F2F;
+      color: #FFF;
+      font-weight: bold;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .rule-text h4 {
+      color: #FFF;
+      font-size: 14px;
+      margin-bottom: 3px;
+      text-transform: none;
+      text-align: left;
+    }
+
+    .rule-text p {
+      color: #AAA;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .img-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .img-modal img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 8px;
+      border: 2px solid #D32F2F;
+    }
+
+    .img-modal-close {
+      margin-top: 15px;
+      background: #D32F2F;
+      color: #fff;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .route-box {
+      background-color: #1A1A1A;
+      border: 1px solid #D32F2F;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .route-box p {
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #EEE;
+    }
+
+    .route-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .edit-name-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    .edit-name-group input {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .edit-name-group button {
+      padding: 8px 14px;
+      margin-top: 0;
+      width: auto;
+      font-size: 13px;
+    }
+
+    .alert-banner {
+      background-color: #C62828;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 12px;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.8; transform: scale(0.99); }
+      to { opacity: 1; transform: scale(1.01); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<div id="image-modal" class="img-modal">
+  <img id="modal-img-target" src="" alt="Documento Expandido">
+  <button class="img-modal-close" onclick="closeImgModal()">Fechar Imagem</button>
+</div>
+
+<div class="app-container">
+
+  <!-- TELA LOGIN -->
+  <div id="screen-login" class="screen active">
+    <h1>Moto Comunidi</h1>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="login-email" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <div class="password-wrapper">
+        <input type="password" id="login-senha" placeholder="******">
+        <span class="toggle-password" onclick="togglePassword('login-senha', this)">👁️</span>
+      </div>
+    </div>
+    <button class="btn" onclick="fazerLogin()">Entrar</button>
+    <button class="btn btn-secondary" onclick="navigate('screen-cadastro-passageiro')">Cadastrar Passageiro</button>
+    <button class="btn btn-secondary" onclick="navigate('screen-cadastro-motorista')">Cadastrar Motorista</button>
+    <button class="btn btn-secondary" style="color: #D32F2F;" onclick="navigate('screen-login-admin')">Acesso Painel ADM</button>
+  </div>
+
+  <!-- CADASTRO PASSAGEIRO -->
+  <div id="screen-cadastro-passageiro" class="screen">
+    <h2>Cadastro Passageiro</h2>
+    <div class="form-group">
+      <label>Nome Completo</label>
+      <input type="text" id="p-nome">
+    </div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="p-email">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <div class="password-wrapper">
+        <input type="password" id="p-senha">
+        <span class="toggle-password" onclick="togglePassword('p-senha', this)">👁</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Foto de Perfil (Avatar)</label>
+      <input type="file" id="p-foto-perfil" accept="image/*" onchange="previewFile(this, 'p-perfil-preview', 'tempFotoPerfil')">
+      <img id="p-perfil-preview" class="doc-preview" alt="Perfil">
+    </div>
+    <div class="form-group">
+      <label>Foto do RG / CNH</label>
+      <input type="file" id="p-rg" accept="image/*" onchange="previewFile(this, 'p-rg-preview', 'tempRgData')">
+      <img id="p-rg-preview" class="doc-preview" alt="Preview RG">
+    </div>
+    <button class="btn" onclick="cadastrarUser('Passageiro')">Enviar para Análise ADM</button>
+    <button class="btn btn-secondary" onclick="navigate('screen-login')">Voltar</button>
+  </div>
+
+  <!-- CADASTRO MOTORISTA -->
+  <div id="screen-cadastro-motorista" class="screen">
+    <h2>Cadastro Motorista</h2>
+    <div class="form-group">
+      <label>Nome Completo</label>
+      <input type="text" id="m-nome">
+    </div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="m-email">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <div class="password-wrapper">
+        <input type="password" id="m-senha">
+        <span class="toggle-password" onclick="togglePassword('m-senha', this)">👁️</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Foto de Perfil (Avatar)</label>
+      <input type="file" id="m-foto-perfil" accept="image/*" onchange="previewFile(this, 'm-perfil-preview', 'tempFotoPerfil')">
+      <img id="m-perfil-preview" class="doc-preview" alt="Perfil">
+    </div>
+    <div class="form-group">
+      <label>Foto da Moto</label>
+      <input type="file" accept="image/*" onchange="previewFile(this, 'm-moto-preview', 'tempFotoMoto')">
+      <img id="m-moto-preview" class="doc-preview" alt="Foto Moto">
+    </div>
+    <div class="form-group">
+      <label>Foto da Placa</label>
+      <input type="file" accept="image/*" onchange="previewFile(this, 'm-placa-preview', 'tempFotoPlaca')">
+      <img id="m-placa-preview" class="doc-preview" alt="Foto Placa">
+    </div>
+    <div class="form-group">
+      <label>Documento da Moto (CRLV)</label>
+      <input type="file" accept="image/*" onchange="previewFile(this, 'm-crlv-preview', 'tempFotoCrlv')">
+      <img id="m-crlv-preview" class="doc-preview" alt="Foto CRLV">
+    </div>
+    <div class="form-group">
+      <label>Foto da CNH / RG</label>
+      <input type="file" id="m-rg" accept="image/*" onchange="previewFile(this, 'm-rg-preview', 'tempRgData')">
+      <img id="m-rg-preview" class="doc-preview" alt="Preview CNH">
+    </div>
+    <button class="btn" onclick="cadastrarUser('Motorista')">Enviar para Análise ADM</button>
+    <button class="btn btn-secondary" onclick="navigate('screen-login')">Voltar</button>
+  </div>
+
+  <!-- AGUARDANDO ANÁLISE -->
+  <div id="screen-analise" class="screen">
+    <h2>Cadastro em Análise</h2>
+    <p style="text-align: center; color: #AAA; margin: 20px 0;">Seus dados e documentos foram enviados para o Painel ADM. Aguarde a liberação para conseguir entrar no app.</p>
+    <button class="btn btn-secondary" onclick="navigate('screen-login')">Voltar ao Login</button>
+  </div>
+
+  <!-- LOGIN ADMIN -->
+  <div id="screen-login-admin" class="screen">
+    <h2>Painel ADM</h2>
+    <div class="form-group">
+      <label>Login Admin</label>
+      <input type="text" id="admin-user" placeholder="motocomunidi">
+    </div>
+    <div class="form-group">
+      <label>Senha Admin</label>
+      <div class="password-wrapper">
+        <input type="password" id="admin-pass" placeholder="******">
+        <span class="toggle-password" onclick="togglePassword('admin-pass', this)">👁️</span>
+      </div>
+    </div>
+    <button class="btn" onclick="loginAdmin()">Entrar no Painel ADM</button>
+    <button class="btn btn-secondary" onclick="navigate('screen-login')">Voltar</button>
+  </div>
+
+  <!-- PAINEL ADMIN DASHBOARD -->
+  <div id="screen-admin-dash" class="screen">
+    <h2>Painel Administrativo</h2>
+    
+    <div class="app-tabs">
+      <button class="tab-btn active" id="tab-adm-pendentes" onclick="switchAdminTab('pendentes')">Para Aprovação</button>
+      <button class="tab-btn" id="tab-adm-usuarios" onclick="switchAdminTab('usuarios')">Usuários</button>
+      <button class="tab-btn" id="tab-adm-chamados" onclick="switchAdminTab('chamados')">
+        Mensagens & Suporte
+        <span id="adm-chat-badge" class="badge-notification" style="display:none;">!</span>
+      </button>
+      <button class="tab-btn" id="tab-adm-regras" onclick="switchAdminTab('regras')">Regras</button>
+    </div>
+
+    <div id="adm-content-pendentes">
+      <div id="admin-list-pendentes"></div>
+    </div>
+
+    <div id="adm-content-usuarios" style="display: none;">
+      <div id="admin-list-usuarios"></div>
+    </div>
+
+    <div id="adm-content-chamados" style="display: none;">
+      <h4 style="color: #FFF; margin-bottom: 10px;">Central de Chamados / Reclamações</h4>
+      <div class="form-group">
+        <label>Selecione um Usuário para Responder:</label>
+        <select id="adm-user-select" onchange="carregarChatSuporteAdm()">
+          <option value="">-- Selecione um usuário --</option>
+        </select>
+      </div>
+      <div class="chat-box" id="adm-support-chat-messages">
+        <p style="text-align:center; color:#888; font-size:12px;">Selecione um usuário para visualizar a conversa.</p>
+      </div>
+      <div style="display: flex; gap: 6px; margin-top: 10px;">
+        <input type="text" id="adm-support-input" placeholder="Digite a resposta do Suporte/ADM...">
+        <button class="btn" style="width: 90px; margin: 0;" onclick="enviarRespostaAdm()">Responder</button>
+      </div>
+    </div>
+
+    <div id="adm-content-regras" style="display: none;">
+      <div id="regras-container-adm"></div>
+    </div>
+
+    <button class="btn btn-secondary" style="margin-top:15px;" onclick="sairAdmin()">Sair do ADM</button>
+  </div>
+
+  <!-- TELA DE CORRIDA & PAINEL DO USUÁRIO -->
+  <div id="screen-corrida" class="screen">
+    <h2>Moto Comunidi</h2>
+    <p id="user-welcome" style="margin-bottom: 12px; color: #DDD; font-size: 14px; text-align: center;"></p>
+
+    <!-- BARRA DE STATUS ONLINE / MOTORISTAS ATIVOS -->
+    <div class="status-online-bar">
+      <div style="font-size: 13px;">
+        <span id="status-indicator-dot" class="status-indicator"></span>
+        <span id="online-count-txt" style="color:#DDD;">Motoristas On-line: <strong>0</strong></span>
+      </div>
+      <button id="btn-toggle-work" class="btn-toggle-online" style="display:none;" onclick="toggleStatusTrabalho()">Ficar Online</button>
+    </div>
+
+    <div class="app-tabs">
+      <button class="tab-btn active" id="tab-user-corrida" onclick="switchUserTab('corrida')">Corridas</button>
+      <button class="tab-btn" id="tab-user-perfil" onclick="switchUserTab('perfil')">Meu Perfil</button>
+      <button class="tab-btn" id="tab-user-suporte" onclick="switchUserTab('suporte')">Suporte / Denúncia</button>
+      <button class="tab-btn" id="tab-user-regras" onclick="switchUserTab('regras')">Regras</button>
+    </div>
+
+    <div id="user-content-corrida">
+      <div id="box-solicitar">
+        <div class="form-group">
+          <label>De onde você vai? (Origem)</label>
+          <input type="text" id="corrida-origem" placeholder="Ex: Rua Central, 100">
+        </div>
+        <div class="form-group">
+          <label>Para onde você vai? (Destino)</label>
+          <input type="text" id="corrida-destino" placeholder="Ex: Av. Principal, 500">
+        </div>
+        <button class="btn" id="btn-chamar" onclick="chamarMotorista()">Chamar Motorista</button>
+      </div>
+
+      <div id="box-aguardando" style="display: none; text-align: center; margin: 20px 0;">
+        <h3 style="color: #FFD700;">Aguardando Motorista...</h3>
+        <p style="color: #AAA; font-size: 14px;">Sua solicitação foi enviada aos motoristas com ALERTA SONORO!</p>
+        <button class="btn btn-secondary" style="margin-top: 15px;" onclick="cancelarCorrida()">Cancelar Chamado</button>
+      </div>
+
+      <div id="box-chamada-motorista" style="display: none;">
+        <div class="alert-banner">🚨 NOVA CORRIDA RECEBIDA! TOQUE PARA ACEITAR</div>
+        <div class="user-card">
+          <h3 style="color: #2E7D32; font-size: 16px; margin-bottom: 10px;">🚨 Passageiro Aguardando!</h3>
+          <div class="profile-header">
+            <img id="passageiro-avatar" class="profile-avatar" src="" alt="Avatar Passageiro">
+            <div class="profile-info">
+              <h4 id="passageiro-nome">Passageiro</h4>
+              <p id="passageiro-rating">★ -- (Passageiro)</p>
+            </div>
+          </div>
+          
+          <div class="route-box">
+            <p>📍 <strong>DE (Origem):</strong> <span id="txt-origem" style="color:#FFD700;"></span></p>
+            <p>🏁 <strong>PARA (Destino):</strong> <span id="txt-destino" style="color:#2E7D32;"></span></p>
+          </div>
+        </div>
+        <button class="btn btn-approve" style="width: 100%; margin-bottom: 8px;" onclick="aceitarCorrida()">Aceitar Corrida</button>
+        <button class="btn btn-reject" style="width: 100%;" onclick="recusarCorrida()">Rejeitar Corrida</button>
+      </div>
+
+      <div id="box-chat" style="display: none;">
+        <div class="user-card" id="card-motorista-info">
+          <div class="profile-header">
+            <img id="motorista-avatar" class="profile-avatar" src="" alt="Avatar Motorista">
+            <div class="profile-info">
+              <h4 id="motorista-nome">Motorista</h4>
+              <p id="motorista-rating">★ -- (Motorista)</p>
+            </div>
+          </div>
+          <p><strong>Origem:</strong> <span id="chat-origem"></span></p>
+          <p><strong>Destino:</strong> <span id="chat-destino"></span></p>
+        </div>
+
+        <div class="chat-box" id="chat-messages"></div>
+        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+          <input type="text" id="chat-input" placeholder="Negocie o valor ou endereço...">
+          <button class="btn" style="width: 80px; margin: 0;" onclick="enviarMensagem()">Enviar</button>
+        </div>
+
+        <div class="form-group">
+          <label>Forma de Pagamento Aceita:</label>
+          <select id="metodo-pagamento">
+            <option value="PIX">PIX</option>
+            <option value="Dinheiro">Dinheiro</option>
+          </select>
+        </div>
+
+        <button class="btn" id="btn-finalizar-corrida" style="background-color: #2E7D32;" onclick="finalizarCorrida()">Finalizar Corrida</button>
+      </div>
+    </div>
+
+    <div id="user-content-perfil" style="display: none;">
+      <div class="user-profile-box">
+        <img id="my-profile-img" class="user-profile-avatar" src="" alt="Sua Foto">
+        
+        <div class="form-group" style="margin-top: 10px;">
+          <label style="font-size: 11px;">Alterar Foto de Perfil</label>
+          <input type="file" accept="image/*" onchange="atualizarFotoPerfilUsuario(this)" style="font-size: 11px; padding: 6px;">
+        </div>
+
+        <h3 id="my-profile-name" style="color: #FFF; margin-bottom: 2px;">Nome Usuário</h3>
+        
+        <!-- EDIÇÃO DE NOME -->
+        <div class="edit-name-group">
+          <input type="text" id="edit-profile-name-input" placeholder="Novo nome de exibição">
+          <button class="btn" onclick="salvarNovoNomePerfil()">Salvar</button>
+        </div>
+
+        <p id="my-profile-role" style="color: #D32F2F; font-size: 13px; font-weight: bold; text-transform: uppercase;"></p>
+        <p id="my-profile-email" style="color: #888; font-size: 12px; margin-top: 4px;"></p>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-val" id="my-profile-rides">0</div>
+            <div class="stat-lbl">Corridas Concluídas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val" id="my-profile-rating">Sem avaliações</div>
+            <div class="stat-lbl">Avaliação Média</div>
+          </div>
+        </div>
+
+        <!-- SEÇÃO DE DOCUMENTOS E FOTO DA MOTO NO PERFIL DO MOTORISTA -->
+        <div id="my-driver-docs-container" style="display: none; margin-top: 20px; border-top: 1px dashed #444; padding-top: 15px;">
+          <h4 style="color: #FFF; font-size: 13px; text-transform: uppercase; margin-bottom: 10px;">Sua Moto e Documentos Registrados</h4>
+          <div class="adm-doc-grid" id="my-driver-docs-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="user-content-suporte" style="display: none;">
+      <div class="rules-card">
+        <h3 style="color: #D32F2F; margin-bottom: 8px;">Fale com o ADM / Denuncie Abusos</h3>
+        <p style="color: #AAA; font-size: 12px; margin-bottom: 15px;">Envie uma mensagem direta para a administração relatar cobranças indevidas, desrespeito, problemas com corridas ou dúvidas.</p>
+        
+        <div class="chat-box" id="user-support-chat-messages"></div>
+
+        <div style="display: flex; gap: 6px; margin-top: 10px;">
+          <input type="text" id="user-support-input" placeholder="Descreva sua reclamação ou dúvida...">
+          <button class="btn" style="width: 80px; margin: 0;" onclick="enviarMensagemSuporteUsuario()">Enviar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="user-content-regras" style="display: none;">
+      <div id="regras-container-user"></div>
+    </div>
+
+    <button class="btn btn-secondary" style="margin-top: 15px;" onclick="desconectarUsuario()">Sair da Conta</button>
+  </div>
+
+  <!-- TELA DE AVALIAÇÃO -->
+  <div id="screen-avaliacao" class="screen">
+    <h2>Avalie a Corrida</h2>
+    <p style="text-align: center;">Como foi sua experiência no Moto Comunidi?</p>
+    <div class="rating-stars">
+      <span onclick="setRating(1)">★</span>
+      <span onclick="setRating(2)">★</span>
+      <span onclick="setRating(3)">★</span>
+      <span onclick="setRating(4)">★</span>
+      <span onclick="setRating(5)">★</span>
+    </div>
+    <button class="btn" onclick="enviarAvaliacao()">Enviar Avaliação</button>
+  </div>
+
+</div>
+
+<script>
+  let users = [];
+  let chamadosSuporte = [];
+  let currentUser = null;
+  let corridaAtual = null;
+  let selectedRating = 0;
+
+  // Monitoramento do Painel ADM
+  let isAdminLoggedIn = false;
+  let lastSupportMessagesCount = 0;
+  let adminMonitorInterval = null;
+
+  // Áudio para alarme estilo Uber
+  let audioCtx = null;
+  let alarmInterval = null;
+
+  let tempRgData = "";
+  let tempFotoPerfil = "";
+  let tempFotoMoto = "";
+  let tempFotoPlaca = "";
+  let tempFotoCrlv = "";
+
+  window.onload = function() {
+    loadDatabase();
+    checkSavedSession();
+  };
+
+  function saveDatabase() {
+    localStorage.setItem('motocomunidi_users', JSON.stringify(users));
+    localStorage.setItem('motocomunidi_suporte', JSON.stringify(chamadosSuporte));
+    atualizarContadorOnline();
+  }
+
+  function loadDatabase() {
+    const saved = localStorage.getItem('motocomunidi_users');
+    if (saved) {
+      try { users = JSON.parse(saved); } catch (e) { users = []; }
+    }
+    const savedSup = localStorage.getItem('motocomunidi_suporte');
+    if (savedSup) {
+      try { chamadosSuporte = JSON.parse(savedSup); } catch (e) { chamadosSuporte = []; }
+    }
+  }
+
+  function checkSavedSession() {
+    const savedCreds = localStorage.getItem('motocomunidi_session');
+    if (savedCreds) {
+      try {
+        const creds = JSON.parse(savedCreds);
+        const user = users.find(u => u.email === creds.email && u.senha === creds.senha);
+        if (user && user.status === 'APROVADO') {
+          currentUser = user;
+          iniciarSessaoUsuario();
+          notify(`Bem-vindo de volta, ${user.nome}!`, 'success');
+        } else {
+          localStorage.removeItem('motocomunidi_session');
+        }
+      } catch (e) {
+        localStorage.removeItem('motocomunidi_session');
+      }
+    }
+  }
+
+  // --- SINTETIZADOR DE SOM DE ALARME E NOTIFICAÇÃO ---
+  function tocarSomAlarmeUber() {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.15);
+
+      gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    } catch(e) {
+      console.log('Erro ao tocar áudio', e);
+    }
+  }
+
+  function tocarSomNotificacaoAdm() {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+
+      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+    } catch(e) {
+      console.log('Erro áudio adm', e);
+    }
+  }
+
+  function iniciarAlarmeCorrida() {
+    pararAlarmeCorrida();
+    tocarSomAlarmeUber();
+    alarmInterval = setInterval(tocarSomAlarmeUber, 800);
+  }
+
+  function pararAlarmeCorrida() {
+    if (alarmInterval) {
+      clearInterval(alarmInterval);
+      alarmInterval = null;
+    }
+  }
+
+  function ocultarEmail(email) {
+    if (!email || !email.includes('@')) return '******';
+    const partes = email.split('@');
+    const usuario = partes[0];
+    const dominio = partes[1];
+    if (usuario.length <= 2) return `**@${dominio}`;
+    return `${usuario.substring(0, 2)}***@${dominio}`;
+  }
+
+  const listaRegras = [
+    { num: 1, titulo: "Zero Tolerância ao Racismo", desc: "Qualquer tipo de injúria ou ato discriminatório racial acarretará em banimento imediato e permanente." },
+    { num: 2, titulo: "Proibido Homofobia e Transfobia", desc: "Respeito total às orientações sexuais e identidades de gênero de todos os membros." },
+    { num: 3, titulo: "Respeito Mútuo e Cortesia", desc: "Linguagem ofensiva, desrespeito ou grosserias causam suspensão e banimento direto pelo ADM." },
+    { num: 4, titulo: "Proibido Assédio", desc: "Qualquer assédio moral, verbal ou sexual é estritamente proibido." },
+    { num: 5, titulo: "Zero Discurso de Ódio", desc: "Incentivo à violência ou discriminação resultam em exclusão definitiva do perfil." },
+    { num: 6, titulo: "Segurança e Leis de Trânsito", desc: "Motoristas e passageiros devem utilizar capacete adequado durante o trajeto." },
+    { num: 7, titulo: "Autenticidade de Documentos", desc: "É proibido usar fotos de terceiros, documentos falsos ou adulterados." },
+    { num: 8, titulo: "Transparência de Valores", desc: "A negociação e a forma de pagamento combinadas devem ser integralmente respeitadas." },
+    { num: 9, titulo: "Condições do Veículo", desc: "A motocicleta deve apresentar condições mecânicas e de segurança perfeitas." },
+    { num: 10, titulo: "Cumprimento das Diretrizes", desc: "O desrespeito às regras autoriza o ADM a banir permanentemente a conta." }
+  ];
+
+  function gerarHTMLRegras() {
+    let html = `
+      <div class="rules-card">
+        <div class="rules-header-badge">
+          🚨 REGRAS DA COMUNIDADE - MOTO COMUNIDI
+        </div>
+    `;
+
+    listaRegras.forEach(r => {
+      html += `
+        <div class="rule-item">
+          <div class="rule-num">${r.num}</div>
+          <div class="rule-text">
+            <h4>${r.titulo}</h4>
+            <p>${r.desc}</p>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  function notify(msg, type = 'error') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    let icon = '🔔';
+    if (type === 'success') icon = '✅';
+    if (type === 'warning') icon = '⚠️';
+    if (type === 'error') icon = '⛔';
+
+    toast.innerHTML = `<span>${icon}</span> <div>${msg}</div>`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 4000);
+  }
+
+  function togglePassword(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = '🙈';
+    } else {
+      input.type = 'password';
+      icon.textContent = '👁️';
+    }
+  }
+
+  function navigate(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+
+    if (screenId === 'screen-corrida' && currentUser) {
+      switchUserTab('corrida');
+      configurarTelaCorrida();
+    }
+  }
+
+  function openImgModal(src) {
+    if(!src) return;
+    document.getElementById('modal-img-target').src = src;
+    document.getElementById('image-modal').style.display = 'flex';
+  }
+
+  function closeImgModal() {
+    document.getElementById('image-modal').style.display = 'none';
+  }
+
+  function previewFile(input, targetImgId, targetVariable) {
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.getElementById(targetImgId);
+        if(img) {
+          img.src = e.target.result;
+          img.style.display = 'block';
+        }
+
+        if (targetVariable === 'tempRgData') tempRgData = e.target.result;
+        if (targetVariable === 'tempFotoPerfil') tempFotoPerfil = e.target.result;
+        if (targetVariable === 'tempFotoMoto') tempFotoMoto = e.target.result;
+        if (targetVariable === 'tempFotoPlaca') tempFotoPlaca = e.target.result;
+        if (targetVariable === 'tempFotoCrlv') tempFotoCrlv = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function salvarNovoNomePerfil() {
+    const novoNome = document.getElementById('edit-profile-name-input').value.trim();
+    if (!novoNome) {
+      notify('O nome não pode estar vazio!', 'warning');
+      return;
+    }
+    
+    if (currentUser) {
+      currentUser.nome = novoNome;
+      
+      const idx = users.findIndex(u => u.id === currentUser.id);
+      if (idx !== -1) {
+        users[idx].nome = novoNome;
+      }
+      
+      saveDatabase();
+      document.getElementById('my-profile-name').innerText = currentUser.nome;
+      document.getElementById('user-welcome').innerText = `Olá, ${currentUser.nome} (${currentUser.tipo})`;
+      notify('Nome alterado com sucesso!', 'success');
+    }
+  }
+
+  function atualizarFotoPerfilUsuario(input) {
+    const file = input.files[0];
+    if (file && currentUser) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentUser.fotoPerfil = e.target.result;
+        
+        const idx = users.findIndex(u => u.id === currentUser.id);
+        if (idx !== -1) {
+          users[idx].fotoPerfil = e.target.result;
+        }
+
+        saveDatabase();
+        document.getElementById('my-profile-img').src = currentUser.fotoPerfil;
+        notify('Foto de perfil atualizada com sucesso!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function cadastrarUser(tipo) {
+    const isPassageiro = tipo === 'Passageiro';
+    const email = document.getElementById(isPassageiro ? 'p-email' : 'm-email').value.trim();
+    const nome = document.getElementById(isPassageiro ? 'p-nome' : 'm-nome').value.trim();
+    const senha = document.getElementById(isPassageiro ? 'p-senha' : 'm-senha').value;
+
+    if (!email || !nome || !senha) {
+      notify('Preencha nome, e-mail e senha!', 'warning');
+      return;
+    }
+
+    if (users.some(u => u.email === email)) {
+      notify('Este e-mail já está cadastrado!', 'error');
+      return;
+    }
+
+    const novoUsuario = {
+      id: Date.now(),
+      nome,
+      email,
+      senha,
+      tipo, // Define permanentemente se é Motorista ou Passageiro
+      fotoPerfil: tempFotoPerfil || '',
+      fotoRg: tempRgData || null,
+      fotoMoto: tempFotoMoto || null,
+      fotoPlaca: tempFotoPlaca || null,
+      fotoCrlv: tempFotoCrlv || null,
+      avaliacoes: [],
+      totalCorridas: 0,
+      isOnline: false,
+      status: 'PENDENTE'
+    };
+
+    users.push(novoUsuario);
+    saveDatabase();
+
+    tempRgData = "";
+    tempFotoPerfil = "";
+    tempFotoMoto = "";
+    tempFotoPlaca = "";
+    tempFotoCrlv = "";
+
+    notify('Cadastro enviado diretamente ao Painel ADM!', 'success');
+    navigate('screen-analise');
+  }
+
+  function fazerLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const senha = document.getElementById('login-senha').value;
+
+    const user = users.find(u => u.email === email && u.senha === senha);
+
+    if (!user) {
+      notify('E-mail ou senha incorretos!', 'error');
+      return;
+    }
+
+    if (user.status === 'BANIDO') {
+      notify('Sua conta foi BANIDA por infração das regras!', 'error');
+      return;
+    }
+
+    if (user.status === 'PENDENTE') {
+      notify('Seu cadastro está pendente de aprovação pelo ADM no painel.', 'warning');
+      navigate('screen-analise');
+      return;
+    }
+
+    if (user.status === 'REJEITADO') {
+      notify('Seu cadastro foi rejeitado pelo administrador.', 'error');
+      return;
+    }
+
+    currentUser = user;
+    localStorage.setItem('motocomunidi_session', JSON.stringify({ email: user.email, senha: user.senha }));
+
+    iniciarSessaoUsuario();
+  }
+
+  function iniciarSessaoUsuario() {
+    document.getElementById('user-welcome').innerText = `Olá, ${currentUser.nome} (${currentUser.tipo})`;
+
+    document.getElementById('my-profile-img').src = currentUser.fotoPerfil || '';
+    document.getElementById('my-profile-name').innerText = currentUser.nome;
+    document.getElementById('edit-profile-name-input').value = currentUser.nome;
+    document.getElementById('my-profile-role').innerText = `Perfil: ${currentUser.tipo}`;
+    
+    document.getElementById('my-profile-email').innerText = currentUser.email;
+    document.getElementById('my-profile-rides').innerText = currentUser.totalCorridas || 0;
+    
+    const media = calcularMediaRating(currentUser.avaliacoes);
+    document.getElementById('my-profile-rating').innerText = media === "0.0" ? "Sem avaliações" : `★ ${media}`;
+
+    const btnToggle = document.getElementById('btn-toggle-work');
+    if (currentUser.tipo === 'Motorista') {
+      btnToggle.style.display = 'block';
+      atualizarBotaoOnline();
+    } else {
+      btnToggle.style.display = 'none';
+    }
+
+    atualizarContadorOnline();
+
+    const docsContainer = document.getElementById('my-driver-docs-container');
+    const docsGrid = document.getElementById('my-driver-docs-grid');
+
+    if (currentUser.tipo === 'Motorista') {
+      docsContainer.style.display = 'block';
+      docsGrid.innerHTML = `
+        <div class="adm-doc-item"><span>Foto da Moto</span><img src="${currentUser.fotoMoto || ''}" onclick="openImgModal('${currentUser.fotoMoto || ''}')"></div>
+        <div class="adm-doc-item"><span>Foto da Placa</span><img src="${currentUser.fotoPlaca || ''}" onclick="openImgModal('${currentUser.fotoPlaca || ''}')"></div>
+        <div class="adm-doc-item"><span>Documento CRLV</span><img src="${currentUser.fotoCrlv || ''}" onclick="openImgModal('${currentUser.fotoCrlv || ''}')"></div>
+        <div class="adm-doc-item"><span>Foto RG / CNH</span><img src="${currentUser.fotoRg || ''}" onclick="openImgModal('${currentUser.fotoRg || ''}')"></div>
+      `;
+    } else {
+      docsContainer.style.display = 'none';
+    }
+
+    document.getElementById('regras-container-user').innerHTML = gerarHTMLRegras();
+    carregarChatSuporteUsuario();
+
+    navigate('screen-corrida');
+  }
+
+  function toggleStatusTrabalho() {
+    if (!currentUser || currentUser.tipo !== 'Motorista') return;
+    
+    currentUser.isOnline = !currentUser.isOnline;
+
+    const idx = users.findIndex(u => u.id === currentUser.id);
+    if (idx !== -1) {
+      users[idx].isOnline = currentUser.isOnline;
+    }
+
+    saveDatabase();
+    atualizarBotaoOnline();
+    
+    if (currentUser.isOnline) {
+      notify('Você agora está ONLINE para receber corridas!', 'success');
+    } else {
+      notify('Você ficou OFFLINE.', 'warning');
+    }
+  }
+
+  function atualizarBotaoOnline() {
+    const btnToggle = document.getElementById('btn-toggle-work');
+    const dot = document.getElementById('status-indicator-dot');
+    
+    if (currentUser && currentUser.isOnline) {
+      btnToggle.innerText = 'Ficar Offline';
+      btnToggle.classList.add('is-online');
+      dot.classList.add('online');
+    } else {
+      btnToggle.innerText = 'Ficar Online';
+      btnToggle.classList.remove('is-online');
+      dot.classList.remove('online');
+    }
+  }
+
+  function atualizarContadorOnline() {
+    const motoristasOnline = users.filter(u => u.tipo === 'Motorista' && u.isOnline && u.status === 'APROVADO').length;
+    const txt = document.getElementById('online-count-txt');
+    if (txt) {
+      txt.innerHTML = `Motoristas On-line: <strong>${motoristasOnline}</strong>`;
+    }
+  }
+
+  function desconectarUsuario() {
+    pararAlarmeCorrida();
+    if (currentUser && currentUser.tipo === 'Motorista') {
+      currentUser.isOnline = false;
+      const idx = users.findIndex(u => u.id === currentUser.id);
+      if (idx !== -1) {
+        users[idx].isOnline = false;
+      }
+      saveDatabase();
+    }
+    localStorage.removeItem('motocomunidi_session');
+    currentUser = null;
+    notify('Sessão encerrada com sucesso.', 'warning');
+    navigate('screen-login');
+  }
+
+  // --- PAINEL ADM ---
+
+  function loginAdmin() {
+    const user = document.getElementById('admin-user').value.trim();
+    const pass = document.getElementById('admin-pass').value.trim();
+
+    if (user === 'motocomunidi' && pass === 'danielle123@@@') {
+      isAdminLoggedIn = true;
+      document.getElementById('regras-container-adm').innerHTML = gerarHTMLRegras();
+      carregarOpcoesUsuariosAdmSuporte();
+      switchAdminTab('pendentes');
+      
+      const msgsUser = chamadosSuporte.filter(m => m.tipoAutor === 'USER');
+      lastSupportMessagesCount = msgsUser.length;
+
+      iniciarMonitoramentoAdm();
+
+      notify('Acesso administrativo ativado!', 'success');
+      navigate('screen-admin-dash');
+    } else {
+      notify('Acesso negado: Credenciais incorretas!', 'error');
+    }
+  }
+
+  function sairAdmin() {
+    isAdminLoggedIn = false;
+    if (adminMonitorInterval) {
+      clearInterval(adminMonitorInterval);
+      adminMonitorInterval = null;
+    }
+    navigate('screen-login');
+  }
+
+  function iniciarMonitoramentoAdm() {
+    if (adminMonitorInterval) clearInterval(adminMonitorInterval);
+    adminMonitorInterval = setInterval(verificarNovosChamadosAdm, 2000);
+  }
+
+  function verificarNovosChamadosAdm() {
+    if (!isAdminLoggedIn) return;
+
+    loadDatabase();
+
+    const msgsUser = chamadosSuporte.filter(m => m.tipoAutor === 'USER');
+    
+    if (msgsUser.length > lastSupportMessagesCount) {
+      const ultimaMsg = msgsUser[msgsUser.length - 1];
+      
+      tocarSomNotificacaoAdm();
+      notify(`📩 DENÚNCIA/MSG DE ${ultimaMsg.autor.toUpperCase()}: "${ultimaMsg.mensagem.substring(0, 25)}..."`, 'error');
+
+      const badge = document.getElementById('adm-chat-badge');
+      if (badge) badge.style.display = 'inline-block';
+
+      carregarOpcoesUsuariosAdmSuporte();
+
+      const select = document.getElementById('adm-user-select');
+      if (select && parseInt(select.value) === ultimaMsg.userId) {
+        carregarChatSuporteAdm();
+      }
+
+      lastSupportMessagesCount = msgsUser.length;
+    }
+  }
+
+  function switchUserTab(tabName) {
+    document.getElementById('tab-user-corrida').classList.toggle('active', tabName === 'corrida');
+    document.getElementById('tab-user-perfil').classList.toggle('active', tabName === 'perfil');
+    document.getElementById('tab-user-suporte').classList.toggle('active', tabName === 'suporte');
+    document.getElementById('tab-user-regras').classList.toggle('active', tabName === 'regras');
+
+    document.getElementById('user-content-corrida').style.display = tabName === 'corrida' ? 'block' : 'none';
+    document.getElementById('user-content-perfil').style.display = tabName === 'perfil' ? 'block' : 'none';
+    document.getElementById('user-content-suporte').style.display = tabName === 'suporte' ? 'block' : 'none';
+    document.getElementById('user-content-regras').style.display = tabName === 'regras' ? 'block' : 'none';
+
+    if (tabName === 'suporte') carregarChatSuporteUsuario();
+  }
+
+  function switchAdminTab(tabName) {
+    document.getElementById('tab-adm-pendentes').classList.toggle('active', tabName === 'pendentes');
+    document.getElementById('tab-adm-usuarios').classList.toggle('active', tabName === 'usuarios');
+    document.getElementById('tab-adm-chamados').classList.toggle('active', tabName === 'chamados');
+    document.getElementById('tab-adm-regras').classList.toggle('active', tabName === 'regras');
+
+    document.getElementById('adm-content-pendentes').style.display = tabName === 'pendentes' ? 'block' : 'none';
+    document.getElementById('adm-content-usuarios').style.display = tabName === 'usuarios' ? 'block' : 'none';
+    document.getElementById('adm-content-chamados').style.display = tabName === 'chamados' ? 'block' : 'none';
+    document.getElementById('adm-content-regras').style.display = tabName === 'regras' ? 'block' : 'none';
+
+    if (tabName === 'chamados') {
+      const badge = document.getElementById('adm-chat-badge');
+      if (badge) badge.style.display = 'none';
+      carregarOpcoesUsuariosAdmSuporte();
+    }
+
+    if (tabName === 'pendentes') renderAdminListPendentes();
+    if (tabName === 'usuarios') renderAdminListUsuarios();
+  }
+
+  function renderAdminListPendentes() {
+    const list = document.getElementById('admin-list-pendentes');
+    list.innerHTML = '';
+
+    const pendentes = users.filter(u => u.status === 'PENDENTE');
+
+    if (pendentes.length === 0) {
+      list.innerHTML = '<p style="text-align:center; color:#888;">Nenhum cadastro aguardando aprovação.</p>';
+      return;
+    }
+
+    pendentes.forEach(u => {
+      const item = document.createElement('div');
+      item.className = 'user-card';
+
+      let docGrid = `
+        <div class="adm-doc-grid">
+          <div class="adm-doc-item"><span>Perfil</span><img src="${u.fotoPerfil || ''}" onclick="openImgModal('${u.fotoPerfil || ''}')"></div>
+          <div class="adm-doc-item"><span>RG / CNH</span><img src="${u.fotoRg || ''}" onclick="openImgModal('${u.fotoRg || ''}')"></div>
+      `;
+
+      if(u.tipo === 'Motorista') {
+        docGrid += `
+          <div class="adm-doc-item"><span>Moto</span><img src="${u.fotoMoto || ''}" onclick="openImgModal('${u.fotoMoto || ''}')"></div>
+          <div class="adm-doc-item"><span>Placa</span><img src="${u.fotoPlaca || ''}" onclick="openImgModal('${u.fotoPlaca || ''}')"></div>
+          <div class="adm-doc-item"><span>CRLV</span><img src="${u.fotoCrlv || ''}" onclick="openImgModal('${u.fotoCrlv || ''}')"></div>
+        `;
+      }
+
+      docGrid += `</div>`;
+
+      item.innerHTML = `
+        <p><strong>Nome:</strong> ${u.nome}</p>
+        <p><strong>Tipo:</strong> ${u.tipo}</p>
+        <p><strong>E-mail:</strong> ${ocultarEmail(u.email)}</p>
+        <p><strong>Senha:</strong> <span style="color:#888;">[Protegida]</span></p>
+        ${docGrid}
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button class="btn-approve" style="flex:1;" onclick="alterarStatus(${u.id}, 'APROVADO')">Aprovar Cadastro</button>
+          <button class="btn-reject" style="flex:1;" onclick="alterarStatus(${u.id}, 'REJEITADO')">Rejeitar</button>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  function renderAdminListUsuarios() {
+    const list = document.getElementById('admin-list-usuarios');
+    list.innerHTML = '';
+
+    if (users.length === 0) {
+      list.innerHTML = '<p style="text-align:center; color:#888;">Nenhum usuário no banco de dados.</p>';
+      return;
+    }
+
+    users.forEach(u => {
+      const item = document.createElement('div');
+      item.className = 'user-card';
+
+      let docGrid = `
+        <div class="adm-doc-grid">
+          <div class="adm-doc-item"><span>Perfil</span><img src="${u.fotoPerfil || ''}" onclick="openImgModal('${u.fotoPerfil || ''}')"></div>
+          <div class="adm-doc-item"><span>RG / CNH</span><img src="${u.fotoRg || ''}" onclick="openImgModal('${u.fotoRg || ''}')"></div>
+      `;
+
+      if(u.tipo === 'Motorista') {
+        docGrid += `
+          <div class="adm-doc-item"><span>Moto</span><img src="${u.fotoMoto || ''}" onclick="openImgModal('${u.fotoMoto || ''}')"></div>
+          <div class="adm-doc-item"><span>Placa</span><img src="${u.fotoPlaca || ''}" onclick="openImgModal('${u.fotoPlaca || ''}')"></div>
+          <div class="adm-doc-item"><span>CRLV</span><img src="${u.fotoCrlv || ''}" onclick="openImgModal('${u.fotoCrlv || ''}')"></div>
+        `;
+      }
+
+      docGrid += `</div>`;
+
+      let statusColor = '#FFD700';
+      if(u.status === 'APROVADO') statusColor = '#2E7D32';
+      if(u.status === 'BANIDO' || u.status === 'REJEITADO') statusColor = '#D32F2F';
+
+      item.innerHTML = `
+        <p><strong>Nome:</strong> ${u.nome} (${u.tipo})</p>
+        <p><strong>E-mail:</strong> ${ocultarEmail(u.email)}</p>
+        <p><strong>Senha:</strong> <span style="color:#888;">[Protegida]</span></p>
+        <p><strong>Corridas Concluídas:</strong> ${u.totalCorridas || 0}</p>
+        <p><strong>Status:</strong> <span style="color:${statusColor}; font-weight:bold;">${u.status}</span></p>
+        ${docGrid}
+        ${u.status !== 'BANIDO' ? 
+          `<button class="btn-ban" onclick="alterarStatus(${u.id}, 'BANIDO')">Banir Usuário</button>` : 
+          `<button class="btn-approve" style="width:100%; margin-top:8px;" onclick="alterarStatus(${u.id}, 'APROVADO')">Desbanir Usuário</button>`}
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  function alterarStatus(userId, novoStatus) {
+    const u = users.find(x => x.id === userId);
+    if (u) {
+      u.status = novoStatus;
+      saveDatabase();
+      notify(`Status do cadastro alterado para: ${novoStatus}`, novoStatus === 'BANIDO' ? 'error' : 'success');
+      renderAdminListPendentes();
+      renderAdminListUsuarios();
+    }
+  }
+
+  function configurarTelaCorrida() {
+    document.getElementById('box-solicitar').style.display = currentUser.tipo === 'Passageiro' ? 'block' : 'none';
+    document.getElementById('box-aguardando').style.display = 'none';
+    document.getElementById('box-chamada-motorista').style.display = 'none';
+    document.getElementById('box-chat').style.display = 'none';
+
+    if (corridaAtual && corridaAtual.status === 'PENDENTE' && currentUser.tipo === 'Motorista') {
+      exibirChamadaParaMotorista();
+    } else if (corridaAtual && corridaAtual.status === 'PENDENTE' && currentUser.tipo === 'Passageiro') {
+      document.getElementById('box-solicitar').style.display = 'none';
+      document.getElementById('box-aguardando').style.display = 'block';
+    } else if (corridaAtual && corridaAtual.status === 'EM_ANDAMENTO') {
+      exibirChatEPerfil();
+    }
+  }
+
+  function chamarMotorista() {
+    const origem = document.getElementById('corrida-origem').value;
+    const destino = document.getElementById('corrida-destino').value;
+
+    if (!origem || !destino) {
+      notify('Informe a origem e o destino da corrida!', 'warning');
+      return;
+    }
+
+    const motoristasOnline = users.filter(u => u.tipo === 'Motorista' && u.isOnline && u.status === 'APROVADO').length;
+    if (motoristasOnline === 0) {
+      notify('Nenhum motorista está online no momento. Aguarde alguns instantes.', 'warning');
+    }
+
+    corridaAtual = {
+      passageiro: currentUser,
+      motorista: null,
+      origem,
+      destino,
+      status: 'PENDENTE',
+      mensagens: []
+    };
+
+    document.getElementById('box-solicitar').style.display = 'none';
+    document.getElementById('box-aguardando').style.display = 'block';
+
+    notify('Procurando motoristas disponíveis...', 'warning');
+
+    iniciarAlarmeCorrida();
+  }
+
+  function cancelarCorrida() {
+    pararAlarmeCorrida();
+    corridaAtual = null;
+    notify('Chamada cancelada.', 'warning');
+    configurarTelaCorrida();
+  }
+
+  function exibirChamadaParaMotorista() {
+    const pass = corridaAtual.passageiro;
+    document.getElementById('txt-origem').innerText = corridaAtual.origem;
+    document.getElementById('txt-destino').innerText = corridaAtual.destino;
+    document.getElementById('passageiro-nome').innerText = pass.nome;
+    document.getElementById('passageiro-avatar').src = pass.fotoPerfil || '';
+
+    const media = calcularMediaRating(pass.avaliacoes);
+    document.getElementById('passageiro-rating').innerText = media === "0.0" ? "★ Sem avaliações" : `★ ${media} (Passageiro)`;
+
+    document.getElementById('box-chamada-motorista').style.display = 'block';
+
+    iniciarAlarmeCorrida();
+  }
+
+  function aceitarCorrida() {
+    pararAlarmeCorrida();
+
+    corridaAtual.motorista = currentUser;
+    corridaAtual.status = 'EM_ANDAMENTO';
+
+    document.getElementById('box-chamada-motorista').style.display = 'none';
+    exibirChatEPerfil();
+
+    addChatMessage('Sistema', 'Corrida aceita! Combinem os detalhes no chat.', 'msg-motorista');
+    notify('Corrida aceita com sucesso!', 'success');
+  }
+
+  function recusarCorrida() {
+    pararAlarmeCorrida();
+    notify('Corrida recusada.', 'warning');
+    corridaAtual = null;
+    document.getElementById('box-chamada-motorista').style.display = 'none';
+  }
+
+  function exibirChatEPerfil() {
+    document.getElementById('box-aguardando').style.display = 'none';
+    document.getElementById('box-solicitar').style.display = 'none';
+    document.getElementById('box-chat').style.display = 'block';
+
+    document.getElementById('chat-origem').innerText = corridaAtual.origem;
+    document.getElementById('chat-destino').innerText = corridaAtual.destino;
+
+    const btnFinalizar = document.getElementById('btn-finalizar-corrida');
+    if (currentUser.tipo === 'Motorista') {
+      btnFinalizar.style.display = 'block';
+    } else {
+      btnFinalizar.style.display = 'none';
+    }
+
+    const mot = corridaAtual.motorista;
+    if (mot) {
+      document.getElementById('motorista-nome').innerText = mot.nome;
+      document.getElementById('motorista-avatar').src = mot.fotoPerfil || '';
+      const media = calcularMediaRating(mot.avaliacoes);
+      document.getElementById('motorista-rating').innerText = media === "0.0" ? "★ Sem avaliações" : `★ ${media} (Motorista)`;
+    }
+  }
+
+  function calcularMediaRating(lista) {
+    if (!lista || lista.length === 0) return "0.0";
+    const soma = lista.reduce((a, b) => a + b, 0);
+    return (soma / lista.length).toFixed(1);
+  }
+
+  function enviarMensagem() {
+    const input = document.getElementById('chat-input');
+    if (!input.value.trim()) return;
+
+    const classe = currentUser.tipo === 'Passageiro' ? 'msg-passageiro' : 'msg-motorista';
+    addChatMessage(currentUser ? currentUser.nome : 'Usuário', input.value, classe);
+    input.value = '';
+  }
+
+  function addChatMessage(autor, texto, classe) {
+    const box = document.getElementById('chat-messages');
+    const msg = document.createElement('div');
+    msg.className = `chat-msg ${classe}`;
+    msg.innerHTML = `<strong>${autor}:</strong> ${texto}`;
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function finalizarCorrida() {
+    const pagamento = document.getElementById('metodo-pagamento').value;
+    
+    if (corridaAtual.passageiro) {
+      const p = users.find(u => u.id === corridaAtual.passageiro.id);
+      if (p) p.totalCorridas = (p.totalCorridas || 0) + 1;
+    }
+    if (corridaAtual.motorista) {
+      const m = users.find(u => u.id === corridaAtual.motorista.id);
+      if (m) m.totalCorridas = (m.totalCorridas || 0) + 1;
+    }
+
+    saveDatabase();
+
+    notify(`Corrida concluída! Pagamento via ${pagamento}.`, 'success');
+    document.getElementById('box-chat').style.display = 'none';
+    navigate('screen-avaliacao');
+  }
+
+  function setRating(val) {
+    selectedRating = val;
+    const stars = document.querySelectorAll('.rating-stars span');
+    stars.forEach((star, index) => {
+      if (index < val) {
+        star.classList.add('selected');
+      } else {
+        star.classList.remove('selected');
+      }
+    });
+  }
+
+  function enviarAvaliacao() {
+    if (selectedRating === 0) {
+      notify('Por favor, selecione as estrelas da avaliação!', 'warning');
+      return;
+    }
+
+    if (corridaAtual) {
+      if (currentUser.tipo === 'Passageiro' && corridaAtual.motorista) {
+        const m = users.find(u => u.id === corridaAtual.motorista.id);
+        if (m) {
+          if(!m.avaliacoes) m.avaliacoes = [];
+          m.avaliacoes.push(selectedRating);
+        }
+      } else if (currentUser.tipo === 'Motorista' && corridaAtual.passageiro) {
+        const p = users.find(u => u.id === corridaAtual.passageiro.id);
+        if (p) {
+          if(!p.avaliacoes) p.avaliacoes = [];
+          p.avaliacoes.push(selectedRating);
+        }
+      }
+      saveDatabase();
+    }
+
+    notify('Avaliação registrada com sucesso!', 'success');
+    selectedRating = 0;
+    corridaAtual = null;
+    setRating(0);
+    
+    iniciarSessaoUsuario();
+  }
+
+  // --- SISTEMA DE SUPORTE ADM ---
+
+  function enviarMensagemSuporteUsuario() {
+    const input = document.getElementById('user-support-input');
+    const texto = input.value.trim();
+    if (!texto || !currentUser) return;
+
+    chamadosSuporte.push({
+      id: Date.now(),
+      userId: currentUser.id,
+      userName: currentUser.nome,
+      userTipo: currentUser.tipo,
+      autor: currentUser.nome,
+      tipoAutor: 'USER',
+      mensagem: texto,
+      data: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+
+    saveDatabase();
+    input.value = '';
+    carregarChatSuporteUsuario();
+    notify('Mensagem/Denúncia enviada ao ADM!', 'success');
+  }
+
+  function carregarChatSuporteUsuario() {
+    const box = document.getElementById('user-support-chat-messages');
+    if (!box || !currentUser) return;
+
+    box.innerHTML = '';
+    const msgs = chamadosSuporte.filter(m => m.userId === currentUser.id);
+
+    if (msgs.length === 0) {
+      box.innerHTML = '<p style="text-align:center; color:#888; font-size:12px;">Nenhuma mensagem registrada. Relate abusos ou dúvidas acima.</p>';
+      return;
+    }
+
+    msgs.forEach(m => {
+      const div = document.createElement('div');
+      const classe = m.tipoAutor === 'ADM' ? 'msg-adm' : 'msg-user';
+      div.className = `chat-msg ${classe}`;
+      div.innerHTML = `<strong>${m.autor} <small style="opacity:0.7;">(${m.data})</small>:</strong> ${m.mensagem}`;
+      box.appendChild(div);
+    });
+
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function carregarOpcoesUsuariosAdmSuporte() {
+    const select = document.getElementById('adm-user-select');
+    if (!select) return;
+
+    const valorSelecionado = select.value;
+    select.innerHTML = '<option value="">-- Selecione um usuário --</option>';
+
+    const idsComChamados = [...new Set(chamadosSuporte.map(c => c.userId))];
+
+    users.forEach(u => {
+      const temMsg = idsComChamados.includes(u.id);
+      const opt = document.createElement('option');
+      opt.value = u.id;
+      opt.innerText = `${u.nome} (${u.tipo}) ${temMsg ? '📩 [Com Mensagem]' : ''}`;
+      select.appendChild(opt);
+    });
+
+    if (valorSelecionado) {
+      select.value = valorSelecionado;
+    }
+  }
+
+  function carregarChatSuporteAdm() {
+    const select = document.getElementById('adm-user-select');
+    const box = document.getElementById('adm-support-chat-messages');
+    const userId = parseInt(select.value);
+
+    if (!userId || isNaN(userId)) {
+      box.innerHTML = '<p style="text-align:center; color:#888; font-size:12px;">Selecione um usuário acima para visualizar a conversa.</p>';
+      return;
+    }
+
+    box.innerHTML = '';
+    const msgs = chamadosSuporte.filter(m => m.userId === userId);
+
+    if (msgs.length === 0) {
+      box.innerHTML = '<p style="text-align:center; color:#888; font-size:12px;">Este usuário ainda não enviou mensagens de suporte.</p>';
+      return;
+    }
+
+    msgs.forEach(m => {
+      const div = document.createElement('div');
+      const classe = m.tipoAutor === 'ADM' ? 'msg-passageiro' : 'msg-motorista';
+      div.className = `chat-msg ${classe}`;
+      div.innerHTML = `<strong>${m.autor} <small style="opacity:0.7;">(${m.data})</small>:</strong> ${m.mensagem}`;
+      box.appendChild(div);
+    });
+
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function enviarRespostaAdm() {
+    const select = document.getElementById('adm-user-select');
+    const input = document.getElementById('adm-support-input');
+    const userId = parseInt(select.value);
+    const texto = input.value.trim();
+
+    if (!userId || isNaN(userId)) {
+      notify('Selecione um usuário para responder!', 'warning');
+      return;
+    }
+
+    if (!texto) {
+      notify('Digite uma mensagem de resposta!', 'warning');
+      return;
+    }
+
+    const u = users.find(x => x.id === userId);
+
+    chamadosSuporte.push({
+      id: Date.now(),
+      userId: userId,
+      userName: u ? u.nome : 'Usuário',
+      userTipo: u ? u.tipo : '',
+      autor: 'SUPORTE ADM',
+      tipoAutor: 'ADM',
+      mensagem: texto,
+      data: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+
+    saveDatabase();
+    input.value = '';
+    carregarChatSuporteAdm();
+    notify('Resposta do Suporte enviada com sucesso!', 'success');
+  }
+</script>
+</body>
+</html>
